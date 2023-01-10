@@ -4,7 +4,7 @@
 int main()
 {
 
-    int option;
+    int option, x;
     list *lista = crearLista();
     do
     {
@@ -35,43 +35,36 @@ int main()
                 printf("La lista no esta vacia.\n");
             break;
         case 3:
-            int x;
             printf("Ingrese el numero: ");
             scanf("%d", &x);
             insertarPrincipio(lista, x);
             break;
         case 4:
-            int x;
             printf("Ingrese el numero: ");
             scanf("%d", &x);
             insertarFinal(lista, x);
             break;
         case 5:
-            int x;
             printf("Ingrese el numero: ");
             scanf("%d", &x);
             insertarOrden(lista, x);
             break;
         case 6:
-            int x;
             printf("Ingrese el numero: ");
             scanf("%d", &x);
             buscar(lista, x);
             break;
         case 7:
-            int x;
             printf("Ingrese el numero: ");
             scanf("%d", &x);
             sacarPrincipio(lista, x);
             break;
         case 8:
-            int x;
             printf("Ingrese el numero: ");
             scanf("%d", &x);
             sacarFinal(lista, x);
             break;
         case 9:
-            int x;
             printf("Ingrese el numero: ");
             scanf("%d", &x);
             sacarPrimeraOcurrencia(lista, x);
