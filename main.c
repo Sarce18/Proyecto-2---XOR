@@ -4,7 +4,7 @@
 int main()
 {
 
-    int option, x;
+    int option, x, y;
     list *lista = crearLista();
     do
     {
@@ -55,14 +55,10 @@ int main()
             buscar(lista, x);
             break;
         case 7:
-            printf("Ingrese el numero: ");
-            scanf("%d", &x);
-            sacarPrincipio(lista, x);
+            sacarPrincipio(lista, &y);
             break;
         case 8:
-            printf("Ingrese el numero: ");
-            scanf("%d", &x);
-            sacarFinal(lista, x);
+            sacarFinal(lista, &y);
             break;
         case 9:
             printf("Ingrese el numero: ");
