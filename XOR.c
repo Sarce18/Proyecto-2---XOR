@@ -1,49 +1,59 @@
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <inttypes.h>
-#include <stdbool.h> 
+#include <stdbool.h>
 #include "XOR.h"
 
-
-
-/* returns XORed value of the node addresses */
-node* XOR(node* a, node* b) {
-    return (node*)((uintptr_t)a ^ (uintptr_t)b);
+// devuelve el valor XOR de las direcciones de los nodos
+node *XOR(node *a, node *b)
+{
+    return (node *)((uintptr_t)a ^ (uintptr_t)b);
 }
 
-node* newnode(int data) {
-    node* new_node;
-    if ((new_node = (node*)malloc(sizeof(node))) == NULL) {
+// funcion para crear un nuevo nodo
+
+node *newnode(int data)
+{
+    node *new_node;
+    if ((new_node = (node *)malloc(sizeof(node))) == NULL)
+    {
         fprintf(stderr, "Error en malloc.");
         return NULL;
     }
 
-    //asignar valor dado
+    // asignar valor dado
     new_node->data = data;
 
     return new_node;
 }
 
-//operaciones
+// operaciones
 
-list* crearLista() {
-    list* lista = (list*)malloc(sizeof(list));
+list *crearLista()
+{
+    list *lista = (list *)malloc(sizeof(list));
     lista->first = lista->last = NULL;
     return lista;
 }
 
-bool esVacia(list* lista) {
+bool esVacia(list *lista)
+{
     if (lista->first == NULL)
         return true;
     return false;
 }
 
-bool inicializar(list* lista) {
-    if (esVacia(lista)) return false;
+bool inicializar(list *lista)
+{
 
+    // se verifica si la lista esta vacia
+    if (esVacia(lista))
+        return false;
+
+    // se recorre la lista y se va realizando free
     while (lista->first->npx)
     {
-        node* prev = lista->first;
+        node *prev = lista->first;
         lista->first = lista->first->npx;
         lista->first->npx = XOR(prev, lista->first->npx);
         free(prev);
@@ -54,21 +64,23 @@ bool inicializar(list* lista) {
     lista->last = lista->first = NULL;
 
     return true;
-
 }
 
-bool sacarPrincipio(list* lista, int* e) {
-    if (esVacia(lista)) return false;
+bool sacarPrincipio(list *lista, int *e)
+{
+    if (esVacia(lista))
+        return false;
 
     *e = lista->first->data;
 
-    if (lista->first == lista->last) {
+    if (lista->first == lista->last)
+    {
         free(lista->first);
         lista->first = lista->last = NULL;
         return true;
     }
 
-    node* prev = lista->first;
+    node *prev = lista->first;
 
     lista->first = lista->first->npx;
 
@@ -79,18 +91,21 @@ bool sacarPrincipio(list* lista, int* e) {
     return true;
 }
 
-bool sacarFinal(list* lista, int* e) {
-    if (esVacia(lista)) return false;
+bool sacarFinal(list *lista, int *e)
+{
+    if (esVacia(lista))
+        return false;
 
     *e = lista->last->data;
 
-    if (lista->first == lista->last) {
+    if (lista->first == lista->last)
+    {
         free(lista->last);
         lista->first = lista->last = NULL;
         return true;
     }
 
-    node* prev = lista->last;
+    node *prev = lista->last;
 
     lista->last = lista->last->npx;
 
@@ -101,21 +116,30 @@ bool sacarFinal(list* lista, int* e) {
     return true;
 }
 
-bool sacarPrimeraOcurrencia(list* lista, int data) {
-    if (esVacia(lista)) return false;
+bool sacarPrimeraOcurrencia(list *lista, int data)
+{
 
+    // se verifica si la lista esta vacia
+    if (esVacia(lista))
+        return false;
+
+    // si el dato esta en el primer nodo de la lista
     if (lista->first->data == data)
         return sacarPrincipio(lista, &data);
 
-    node* curr = lista->first;
-    node* prev = NULL;
-    node* next;
+    node *curr = lista->first;
+    node *prev = NULL;
+    node *next;
 
-    while (curr != NULL) {
+    // se recorre la lista
 
-        if (curr->data == data) {
+    while (curr != NULL)
+    {
 
-            node* curr_next = XOR(curr->npx, prev);
+        if (curr->data == data)
+        {
+
+            node *curr_next = XOR(curr->npx, prev);
 
             prev->npx = XOR(XOR(prev->npx, curr), curr_next);
 
@@ -128,67 +152,72 @@ bool sacarPrimeraOcurrencia(list* lista, int data) {
 
         next = XOR(prev, curr->npx);
 
-        // update prev and curr for next iteration 
+        // Se actualizan prev y curr
         prev = curr;
         curr = next;
     }
 
     return false;
-
 }
 
-bool insertarPrincipio(list* lista, int data) {
+bool insertarPrincipio(list *lista, int data)
+{
 
-    //nuevo nodo
-    node* new_node = newnode(data);
+    // nuevo nodo
+    node *new_node = newnode(data);
 
-    //si es vacía, el nuevo nodo será el primero y el último
-    if (esVacia(lista)) {
+    // si es vacía, el nuevo nodo será el primero y el último
+    if (esVacia(lista))
+    {
         lista->first = lista->last = new_node;
         new_node->npx = NULL;
         return true;
     }
 
-    //Se le asigna la cabeza al nuevo nodo
+    // Se le asigna la cabeza al nuevo nodo
     new_node->npx = lista->first;
 
-    //el nodo que se encontraba al principio pasa a ser el siguiente 
+    // el nodo que se encontraba al principio pasa a ser el siguiente
     lista->first->npx = XOR(new_node, XOR(lista->first->npx, NULL));
 
-    //nuevo primer elemento
+    // nuevo primer elemento
     lista->first = new_node;
 
     return true;
 }
 
-bool insertarFinal(list* lista, int data) {
+bool insertarFinal(list *lista, int data)
+{
 
-    //nuevo nodo
-    node* new_node = newnode(data);
+    // nuevo nodo
+    node *new_node = newnode(data);
 
-    //si es vacía, el nuevo nodo será el primero y el último
-    if (esVacia(lista)) {
+    // si es vacía, el nuevo nodo será el primero y el último
+    if (esVacia(lista))
+    {
         lista->first = lista->last = new_node;
         new_node->npx = NULL;
         return true;
     }
 
-    //Se le asigna la cola al nuevo nodo
+    // Se le asigna la cola al nuevo nodo
     new_node->npx = lista->last;
 
-    //el nodo que se encontraba al final pasa a ser el anterior
+    // el nodo que se encontraba al final pasa a ser el anterior
     lista->last->npx = XOR(XOR(NULL, lista->last->npx), new_node);
 
-    //nuevo último elemento
+    // nuevo último elemento
     lista->last = new_node;
 
     return true;
 }
 
-bool insertarOrden(list* lista, int data) {
-    node* new_node = newnode(data);
+bool insertarOrden(list *lista, int data)
+{
+    node *new_node = newnode(data);
 
-    if (esVacia(lista)) {
+    if (esVacia(lista))
+    {
         new_node->npx = XOR(lista->first, NULL);
         lista->first = new_node;
         lista->last = new_node;
@@ -201,13 +230,15 @@ bool insertarOrden(list* lista, int data) {
     if (data >= lista->last->data)
         return insertarFinal(lista, data);
 
-    node* curr = lista->first;
-    node* prev = NULL;
-    node* next;
+    node *curr = lista->first;
+    node *prev = NULL;
+    node *next;
 
-    while (curr != NULL) {
+    while (curr != NULL)
+    {
 
-        if (curr->data >= data) {
+        if (curr->data >= data)
+        {
             prev->npx = XOR(new_node, XOR(prev->npx, curr));
             curr->npx = XOR(new_node, XOR(curr->npx, prev));
             new_node->npx = XOR(prev, curr);
@@ -216,7 +247,7 @@ bool insertarOrden(list* lista, int data) {
 
         next = XOR(prev, curr->npx);
 
-        // update prev and curr for next iteration 
+        // se actualiza prev y curr
         prev = curr;
         curr = next;
     }
@@ -224,102 +255,108 @@ bool insertarOrden(list* lista, int data) {
     return 1;
 }
 
-bool buscar(list* lista, int data) {
+bool buscar(list *lista, int data)
+{
 
-    if (esVacia(lista)) return false;
+    if (esVacia(lista))
+        return false;
 
-    node* curr = lista->first;
-    node* prev = NULL;
-    node* next;
+    node *curr = lista->first;
+    node *prev = NULL;
+    node *next;
     int i = 0;
 
-    while (curr != NULL) {
+    while (curr != NULL)
+    {
 
         i++;
-        if (curr->data == data) {
+        if (curr->data == data)
+        {
             printf("\nElemento %i encontrado en la posicion %i\n", data, i);
             return true;
         }
 
         next = XOR(prev, curr->npx);
 
-        // update prev and curr for next iteration 
+        // se actualiza prev y curr
         prev = curr;
         curr = next;
     }
 
     printf("\nElemento no encontrado.\n");
     return false;
-
 }
 
-void listarInicioAFinal(list* lista) {
+void listarInicioAFinal(list *lista)
+{
 
-    if (esVacia(lista)) {
+    if (esVacia(lista))
+    {
         printf("\nLa lista esta vacia.\n");
         return;
     }
-    node* curr = lista->first;
-    node* prev = NULL;
-    node* next;
+    node *curr = lista->first;
+    node *prev = NULL;
+    node *next;
 
     printf("\nElementos de la lista (desde el primero al ultimo): \n");
 
-    while (curr != NULL) {
+    while (curr != NULL)
+    {
 
-        // print current node 
+        // se imprime el valor de curr
         printf("%i ", (curr->data));
 
-        // get address of next node: curr->npx is  
-        // next^prev, so curr->npx^prev will be 
-        // next^prev^prev which is next 
         next = XOR(prev, curr->npx);
 
-        // update prev and curr for next iteration 
+        // Se actualiza prev y curr
         prev = curr;
         curr = next;
     }
 }
 
-void listarFinalAInicio(list* lista) {
+void listarFinalAInicio(list *lista)
+{
 
-    if (esVacia(lista)) {
+    if (esVacia(lista))
+    {
         printf("\nLa lista esta vacia.\n");
         return;
     }
-    node* curr = lista->last;
-    node* prev = NULL;
-    node* next;
+    node *curr = lista->last;
+    node *prev = NULL;
+    node *next;
 
     printf("\nElementos de la lista (desde el ultimo al primero): \n");
 
-    while (curr != NULL) {
+    while (curr != NULL)
+    {
 
-        //imprimir valor del nodo actual
+        // imprimir valor del nodo actual
         printf("%i ", (curr->data));
 
-        // get address of next node: curr->npx is  
-        // next^prev, so curr->npx^prev will be 
-        // next^prev^prev which is next 
         next = XOR(curr->npx, prev);
 
-        // update prev and curr for next iteration 
+        // se actualiza prev y curr
         prev = curr;
         curr = next;
     }
 }
 
-int cantidadElementos(list* lista) {
+int cantidadElementos(list *lista)
+{
 
-    if (esVacia(lista)) {
+    if (esVacia(lista))
+    {
         return 0;
     }
-    node* curr = lista->first;
-    node* prev = NULL;
-    node* next;
+    node *curr = lista->first;
+    node *prev = NULL;
+    node *next;
     int i = 0;
 
-    while (curr != NULL) {
+    while (curr != NULL)
+    {
         i++;
         next = XOR(prev, curr->npx);
         prev = curr;
@@ -328,4 +365,3 @@ int cantidadElementos(list* lista) {
 
     return i;
 }
-
