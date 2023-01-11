@@ -38,7 +38,7 @@ list *crearLista()
 
 bool esVacia(list *lista)
 {
-    if (lista->first == NULL)
+    if (!lista->first)
         return true;
     return false;
 }
@@ -125,7 +125,10 @@ bool sacarPrimeraOcurrencia(list *lista, int data)
 
     // si el dato esta en el primer nodo de la lista
     if (lista->first->data == data)
-        return sacarPrincipio(lista, &data);
+    {
+        sacarPrincipio(lista, &data);
+        return false;
+    }
 
     node *curr = lista->first;
     node *prev = NULL;

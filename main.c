@@ -8,7 +8,7 @@ int main()
     list *lista = crearLista();
     do
     {
-        printf("1. Inicializar lista.\n");
+        printf("\n1. Inicializar lista.\n");
         printf("2. Es vacia.\n");
         printf("3. Insertar principio.\n");
         printf("4. Insertar final.\n");
@@ -76,7 +76,6 @@ int main()
             break;
 
         default:
-            printf("Inserte una opcion valida.\n");
             break;
         }
     } while (option != 13);
